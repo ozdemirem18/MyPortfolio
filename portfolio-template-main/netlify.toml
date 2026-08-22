@@ -1,4 +1,4 @@
 [build]
   base = "portfolio-template-main"
-  command = "npm install --include=dev && npm run build"
-  publish = "portfolio-template-main/dist"
+  command = "npm install && npm run build"
+  publish = "dist"
