@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, type LucideIcon } from 'lucide-react';
+import { Github, Globe, type LucideIcon } from 'lucide-react';
 import { useThemeColors } from '../../hooks/useThemeColors';
 
 interface ProjectHeaderProps {
@@ -7,6 +7,8 @@ interface ProjectHeaderProps {
   title: string;
   subtitle: string;
   githubUrl: string;
+  /** Deployed site. Omit it and the Live Demo button is not rendered. */
+  liveUrl?: string;
   features: {
     icon: LucideIcon;
     title: string;
@@ -14,12 +16,13 @@ interface ProjectHeaderProps {
   }[];
 }
 
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({ 
-  icon, 
-  title, 
-  subtitle, 
-  githubUrl, 
-  features 
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({
+  icon,
+  title,
+  subtitle,
+  githubUrl,
+  liveUrl,
+  features
 }) => {
   const themeColors = useThemeColors();
 
@@ -30,7 +33,23 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         <div className="flex-1">
           <h1 className="text-4xl font-bold mb-2" style={{ color: themeColors.text.primary }}>{title}</h1>
           <p className="text-lg" style={{ color: themeColors.text.secondary }}>{subtitle}</p>
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-wrap gap-4 mt-4">
+            {liveUrl && (
+              <a
+                href={liveUrl}
+                target="_blank"
+                aria-label="Open the live site (opens in new tab)"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-80 transition-colors"
+                style={{
+                  backgroundColor: themeColors.interactive.active,
+                  color: themeColors.colors.dark[900]
+                }}
+              >
+                <Globe className="h-4 w-4" aria-hidden="true" />
+                Live Demo
+              </a>
+            )}
             <a
               href={githubUrl}
               target="_blank"

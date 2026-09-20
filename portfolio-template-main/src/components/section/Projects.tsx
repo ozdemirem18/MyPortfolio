@@ -4,9 +4,26 @@ import { useThemeColors } from '../../hooks/useThemeColors';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import { ExternalLink, Code, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Code, Heart, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { lightStars, darkStars, specialStars } from '../../assets/stars';
 import { comingSoon } from '../../assets';
+
+// A project whose details live on this site ("/projects/...") must be reached
+// through <Link>: an <a target="_blank"> would reload the whole app in a new
+// tab and lose the dark-mode state. Anything else is an external site.
+const isInternalLink = (url: string) => url.startsWith('/');
+
+interface Project {
+  title: string;
+  description: string;
+  technologies: string[];
+  icon: string;
+  detailsUrl: string;
+  /** Deployed site. Omit it and the Live button is not rendered at all. */
+  liveUrl?: string;
+  githubUrl: string;
+}
 
 const Projects = () => {
   const { isDarkMode } = useDarkMode();
@@ -225,7 +242,7 @@ const Projects = () => {
   }, [draggedStar]);
 
   // project data - these are the main cards
-  const projects = [
+  const projects: Project[] = [
     {
       title: "AI Lifestyle Coach Agent",
       description: "A real-time, AI-powered fitness companion that uses computer vision (MediaPipe & OpenCV) for pose correction, tracks daily health metrics, and provides personalized LLM coaching",
@@ -242,7 +259,16 @@ const Projects = () => {
       detailsUrl: "https://github.com/ozdemirem18/photobooth-app",
       githubUrl: "https://github.com/ozdemirem18/photobooth-app"
     },
-    
+    {
+      title: "AI Job Matcher",
+      description: "A local-first CV-to-job matching engine: it reads your CV from PDF, pulls live listings, and scores every posting with a seniority-aware TF-IDF model written in pure Python — no LLM, no external AI API.",
+      technologies: ["Python", "FastAPI", "Jinja2", "pandas", "PyMuPDF", "SQLite", "Vercel"],
+      icon: comingSoon,
+      detailsUrl: "/projects/ai-job-matcher",
+      liveUrl: "https://ai-job-matcher-five-sigma.vercel.app/",
+      githubUrl: "https://github.com/EmreGuezel/AI-Job-Matcher"
+    },
+
   ];
 
   // Calculate carousel pagination
@@ -476,11 +502,24 @@ const Projects = () => {
                       </Badge>
                     ))}
                   </div>
-                  <div className="flex gap-3" style={{ marginTop: 'auto', paddingTop: '8px' }}>
-                    <a href={project.detailsUrl} className="project-btn flex items-center gap-1" style={{ textDecoration: 'none', color: 'white' }} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} project details`}>
-                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                      Details
-                    </a>
+                  <div className="flex flex-wrap gap-3" style={{ marginTop: 'auto', paddingTop: '8px' }}>
+                    {project.liveUrl && (
+                      <a href={project.liveUrl} className="project-btn flex items-center gap-1" style={{ textDecoration: 'none', color: 'white' }} target="_blank" rel="noopener noreferrer" aria-label={`Open the live ${project.title} site (opens in new tab)`}>
+                        <Globe className="h-4 w-4" aria-hidden="true" />
+                        Live
+                      </a>
+                    )}
+                    {isInternalLink(project.detailsUrl) ? (
+                      <Link to={project.detailsUrl} className="project-btn-outline flex items-center gap-1" style={{ textDecoration: 'none' }} aria-label={`View ${project.title} project details`}>
+                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        Details
+                      </Link>
+                    ) : (
+                      <a href={project.detailsUrl} className="project-btn-outline flex items-center gap-1" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} project details`}>
+                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        Details
+                      </a>
+                    )}
                     <a href={project.githubUrl} className="project-btn-outline flex items-center gap-1" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} source code on GitHub`}>
                       <Code className="h-4 w-4" aria-hidden="true" />
                       Code
